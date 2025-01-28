@@ -1,0 +1,36 @@
+.dashboard {
+    padding: 20px 200px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between; /* Distribuye los elementos: uno a la izquierda y otro a la derecha */
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+}
+
+.dashboard-header .cerrarButton {
+    background-color: #bdc3c7;
+    padding: 10px 20px;
+}
+
+/* Contenedor de expedientes */
+.expedientes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px 0px;
+}
+
+
+/* Media queries para ajustar el padding del dashboard en pantallas pequeñas */
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 20px 20px;
+    }
+}

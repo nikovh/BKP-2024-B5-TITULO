@@ -1,0 +1,13 @@
+.desplegable {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  
+  .desplegable-cerrado {
+    max-height: 0;
+  }
+  
+  .desplegable-abierto {
+    max-height: 500px; /* Ajustar según el contenido */
+  }
+  

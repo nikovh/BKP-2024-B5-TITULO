@@ -1,0 +1,159 @@
+.administracion-container {
+    padding: 20px 200px;
+    background-color: #e5e5e5;
+}
+
+.administracion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.administracion-header h1 {
+    margin: 0;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px 0px;
+}
+
+.card {
+    background-color: #1a1a1a;
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 250px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background-color: #b5b5b5;
+    color: black;
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: auto 0;
+}
+
+.card p {
+    font-size: 1rem;
+    color: #cccccc;
+    text-align: right;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.data-table {
+    width: 100%; /* La tabla ocupará el ancho del contenedor */
+    border-collapse: collapse;
+    margin-top: 10px;
+    min-width: 600px; /* Ancho mínimo para evitar que colapse en columnas pequeñas */
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #ccc;
+    padding: 6px; /* Padding reducido para mejorar la visualización en pantallas pequeñas */
+    text-align: left;
+    font-size: 0.85rem; /* Tamaño de texto ajustado */
+    word-wrap: break-word; /* Ajustar texto largo dentro de las celdas */
+}
+
+.data-table th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+}
+
+.data-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.data-table-container {
+    margin-top: 20px;
+    overflow-y: auto; /* Permitir scroll si la tabla es muy alta */
+    max-height: 60vh;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.accordion .desplegable {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.accordion .desplegable:hover {
+    background-color: #333;
+}
+
+.accordion .desplegable + div {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: white;
+    overflow-x: auto; /* Permitir desplazamiento horizontal */
+    white-space: nowrap; /* Evitar que las filas colapsen */
+    max-width: 100%; /* Limitar el ancho máximo al del contenedor */
+}
+
+
+
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+    .data-table th,
+    .data-table td {
+        font-size: 0.75rem; /* Reducir el tamaño del texto */
+        padding: 4px; /* Reducir el espacio de las celdas */
+    }
+
+    .accordion .desplegable + div {
+        overflow-x: auto; /* Activar desplazamiento horizontal si es necesario */
+    }
+}
+

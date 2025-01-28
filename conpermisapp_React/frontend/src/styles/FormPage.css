@@ -1,0 +1,44 @@
+.botones-der {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    /* margin: 5px; */
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    max-width:fit-content;
+}
+
+button:first-child {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+button:first-child:hover {
+    background-color: #e0e0e0;
+}
+
+button:last-child {
+    background-color: #ea1e63;
+    color: #fff;
+}
+
+button:last-child:hover {
+    background-color: #9d1442;
+}
+
+select {
+    width: fit-content;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #333;
+    box-sizing: border-box;
+}

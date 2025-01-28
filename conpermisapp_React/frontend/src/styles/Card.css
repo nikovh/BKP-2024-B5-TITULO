@@ -1,0 +1,89 @@
+.expediente-card {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: white;
+
+    max-width: 250px;
+    /* width: 100%; */
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Distribuir contenido verticalmente */
+    align-items: stretch;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    /* Para posicionar el ID y el icono */
+}
+
+.expediente-card:hover {
+    transform: scale(1.05);
+    color: black;
+    background-color: #b5b5b5;
+    transition: background-color 0.5s ease;
+}
+
+/* Encabezado */
+.expediente-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.expediente-card-header span {
+    font-size: 0.85rem;
+    /* color: #cccccc; */
+}
+
+/* Texto central */
+.expediente-card h3 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: auto 0;
+}
+
+/* Texto inferior */
+.expediente-card-footer p {
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+/* Iconos */
+/* .expediente-card-icons {
+    display: flex;
+    gap: 8px;
+    padding-top: 40px;
+} */
+
+.expediente-card-icons {
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.expediente-card-icons:hover {
+    color: #d31061;
+}
+
+.add-new {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    border: solid dashed;
+    /* background-color: #a54b72; */
+    background-color: #b5b5b5;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+
+.add-new:hover {
+    background-color: #d31061;
+    transform: scale(1.05);
+}
+

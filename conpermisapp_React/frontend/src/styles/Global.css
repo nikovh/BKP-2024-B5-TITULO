@@ -1,0 +1,28 @@
+:root {
+    --color-primario: #3498db;
+    --color-secundario: #2ecc71;
+    --color-fondo: #f5f5f5;
+    --fuente-principal: "Arial", sans-serif;
+  }
+  
+  body {
+    font-family: var(--fuente-principal);
+    background-color: var(--color-fondo);
+    margin: 0;
+    padding: 0;
+  }
+  
+  button {
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: var(--color-secundario);
+  }
+  
