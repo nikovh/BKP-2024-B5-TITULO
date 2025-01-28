@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import GenerarPDF from "../GenerarPDF";
 import { useParams } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+
 const FormDeclaracionProp = () => {
   const { id } = useParams();
   const [datos, setDatos] = useState(null);

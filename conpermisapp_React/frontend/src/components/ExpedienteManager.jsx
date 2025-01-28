@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { auth } from "../firebase";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+
 function ExpedienteManager() {
     const { email } = useParams();
     const [expedientes, setExpedientes] = useState([]); // Inicializamos como un array vacío para evitar errores
@@ -23,11 +25,11 @@ function ExpedienteManager() {
         const fetchNombresYExpedientes = async () => {
             try {
                 // Fetch tipos
-                const tipoResponse = await fetch(`http://localhost:4000/expedientes/tipo-expediente`);
+                const tipoResponse = await fetch(`${API_URL}/expedientes/tipo-expediente`);
                 const tipos = await tipoResponse.json();
     
                 // Fetch subtipos
-                const subtipoResponse = await fetch(`http://localhost:4000/expedientes/subtipo-expediente`);
+                const subtipoResponse = await fetch(`${API_URL}/expedientes/subtipo-expediente`);
                 const subtipos = await subtipoResponse.json();
     
                 // Fetch expedientes
@@ -38,7 +40,7 @@ function ExpedienteManager() {
                     return;
                 }
     
-                const response = await fetch(`http://localhost:4000/expedientes?usuario_email=${usuarioEmail}`);
+                const response = await fetch(`${API_URL}/expedientes?usuario_email=${usuarioEmail}`);
                 const data = await response.json();
     
                 if (Array.isArray(data)) {
@@ -78,7 +80,7 @@ function ExpedienteManager() {
         if (!expedienteSeleccionado) return;
 
         try {
-            const response = await fetch(`http://localhost:4000/expedientes/${expedienteSeleccionado.id}`, {
+            const response = await fetch(`${API_URL}/expedientes/${expedienteSeleccionado.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -105,7 +107,7 @@ function ExpedienteManager() {
         if (!window.confirm("¿Estás seguro de eliminar este expediente?")) return;
 
         try {
-            const response = await fetch(`http://localhost:4000/expedientes/${id}`, {
+            const response = await fetch(`${API_URL}/expedientes/${id}`, {
                 method: "DELETE",
             });
 

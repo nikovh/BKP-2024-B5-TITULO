@@ -6,6 +6,9 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import "../styles/Administracion.css";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+
+
 const Administracion = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [filter, setFilter] = useState("");
@@ -26,10 +29,10 @@ const Administracion = () => {
     const fetchData = async () => {
       try {
         const [usuariosRes, propietariosRes, propiedadesRes, expedientesRes] = await Promise.all([
-          fetch("http://localhost:4000/usuarios").then((res) => res.json()),
-          fetch("http://localhost:4000/propietarios").then((res) => res.json()),
-          fetch("http://localhost:4000/propiedades").then((res) => res.json()),
-          fetch("http://localhost:4000/expedientes").then((res) => res.json()),
+          fetch(`${API_URL}/usuarios`).then((res) => res.json()),
+          fetch(`${API_URL}/propietarios`).then((res) => res.json()),
+          fetch(`${API_URL}/propiedades`).then((res) => res.json()),
+          fetch(`${API_URL}/expedientes`).then((res) => res.json()),
         ]);
 
         setData({
@@ -63,7 +66,7 @@ const Administracion = () => {
     console.log("handleFilterSearch fue llamado");
     setHasSearched(true); // Marcar que se hizo una búsqueda
     try {
-      let endpoint = `http://localhost:4000/${activeModal}`;
+      let endpoint = `${API_URL}/${activeModal}`;
       let query = "";
 
       // Construir la consulta dependiendo del tipo de Card
@@ -106,7 +109,7 @@ const Administracion = () => {
     try {
       const currentType = type || activeModal; // Determinar si es modal o desplegable
       const endpoint = currentType === "usuarios" || currentType === "propietarios" ? "rut" : "id";
-      const response = await fetch(`http://localhost:4000/${currentType}/${idOrRut}`, {
+      const response = await fetch(`${API_URL}/${currentType}/${idOrRut}`, {
         method: "DELETE",
       });
 
@@ -144,44 +147,6 @@ const Administracion = () => {
     navigate(`/editar/${idOrRut}`); // Redirige usando el ID del elemento
   };
 
-  // const handleSaveEdit = async () => {
-  //     if (!editingItem) return;
-
-  //     try {
-  //         const endpoint = activeModal === "usuarios" || activeModal === "propietarios" ? "rut" : "id";
-  //         const idOrRut = editingItem[endpoint];
-
-  //         const response = await fetch(`http://localhost:4000/${activeModal}/${idOrRut}`, {
-  //             method: "PUT",
-  //             headers: { "Content-Type": "application/json" },
-  //             body: JSON.stringify(editingItem),
-  //         });
-
-  //         if (!response.ok) {
-  //             throw new Error("Error al actualizar el registro.");
-  //         }
-
-  //         const updatedData = await response.json();
-
-  //         // Actualizar los datos en las tablas
-  //         setFilteredData((prev) =>
-  //             prev.map((item) => (item[endpoint] === idOrRut ? updatedData : item))
-  //         );
-  //         setData((prev) => ({
-  //             ...prev,
-  //             [activeModal]: prev[activeModal].map((item) =>
-  //                 item[endpoint] === idOrRut ? updatedData : item
-  //             ),
-  //         }));
-
-  //         setEditingItem(null); // Salir del modo de edición
-  //         alert("Registro actualizado exitosamente.");
-  //     } catch (err) {
-  //         alert("Ocurrió un error al intentar actualizar el registro.");
-  //         console.error(err);
-  //     }
-  // };
-
   const renderTable = (type) => (
     <table className="data-table">
       <thead>
@@ -218,7 +183,6 @@ const Administracion = () => {
       console.error("Error al cerrar sesión:", err);
     }
   };
-
 
   return (
     <div className="administracion-container">

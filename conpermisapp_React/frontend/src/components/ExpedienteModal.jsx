@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Modal.css"
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 function ExpedienteModal({ isOpen, onClose }) {
     const navigate = useNavigate();
@@ -16,12 +17,12 @@ function ExpedienteModal({ isOpen, onClose }) {
     useEffect(() => {
         if (isOpen) {
             // consultar tipos y subtipos
-            fetch("http://localhost:4000/expedientes/tipo-expediente")
+            fetch(`${API_URL}/expedientes/tipo-expediente`)
                 .then((res) => res.json())
                 .then((data) => setTipos(data))
                 .catch((err) => console.error(err));
 
-            fetch("http://localhost:4000/expedientes/subtipo-expediente")
+            fetch(`${API_URL}/expedientes/subtipo-expediente`)
                 .then((res) => res.json())
                 .then((data) => setSubtipos(data))
                 .catch((err) => console.error(err));

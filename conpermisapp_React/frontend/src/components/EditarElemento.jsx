@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import "../styles/Edicion.css"
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 const EditarElemento = () => {
     const { id } = useParams(); // Obtiene el ID de la URL
@@ -26,11 +27,11 @@ const EditarElemento = () => {
             try {
                 let endpoint;
                 if (type === "usuarios" || type === "propietarios") {
-                    endpoint = `http://localhost:4000/${type}?rut=${id}`;
+                    endpoint = `${API_URL}/${type}?rut=${id}`;
                 } else if (type === "propiedades") {
-                    endpoint = `http://localhost:4000/${type}?expedienteId=${id}`;
+                    endpoint = `${API_URL}/${type}?expedienteId=${id}`;
                 } else if (type === "expedientes") {
-                    endpoint = `http://localhost:4000/${type}/${id}`;
+                    endpoint = `${API_URL}/${type}/${id}`;
                 }
     
                 const response = await fetch(endpoint);
@@ -59,7 +60,7 @@ const EditarElemento = () => {
             const idOrRut = itemData[endpoint];
 
             const response = await fetch(
-                `http://localhost:4000/${entityType}/${idOrRut}`,
+                `${API_URL}/${entityType}/${idOrRut}`,
                 {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },

@@ -6,6 +6,8 @@ import DatosPropietario from './FormPage/DatosPropietario';
 import DatosPropiedad from "./FormPage/DatosPropiedad";
 import "../styles/FormPage.css";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+
 function ExpedienteFormPage() {
     const navigate = useNavigate();
 
@@ -52,9 +54,9 @@ function ExpedienteFormPage() {
         const fetchDatosIniciales = async () => {
             try {
                 const [tiposRes, subtiposRes, propietariosRes] = await Promise.all([
-                    fetch("http://localhost:4000/expedientes/tipo-expediente"),
-                    fetch("http://localhost:4000/expedientes/subtipo-expediente"),
-                    fetch("http://localhost:4000/propietarios"),
+                    fetch(`${API_URL}/expedientes/tipo-expediente`),
+                    fetch(`${API_URL}/expedientes/subtipo-expediente`),
+                    fetch(`${API_URL}/propietarios`),
                 ]);
 
                 const tipos = await tiposRes.json();
@@ -130,7 +132,7 @@ function ExpedienteFormPage() {
                 usuarioEmail: auth.currentUser?.email,
             };
 
-            const response = await fetch('http://localhost:4000/expedientes', {
+            const response = await fetch(`${API_URL}/expedientes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosEnviados),

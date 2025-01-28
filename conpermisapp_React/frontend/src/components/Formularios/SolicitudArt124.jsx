@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import GenerarPDF from "../GenerarPDF";
 import { useParams } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 const SolicitudArt124 = () => {
   const { id } = useParams();
@@ -15,7 +16,7 @@ const SolicitudArt124 = () => {
         if (!id) throw new Error("El ID del expediente no está definido.");
 
         // Fetch expediente, propiedad y propietario en una sola llamada
-        const response = await fetch(`http://localhost:4000/expedientes/${id}/detalle`);
+        const response = await fetch(`${API_URL}/expedientes/${id}/detalle`);
         if (!response.ok) throw new Error("No se pudieron cargar los datos del expediente.");
         const data = await response.json();
 

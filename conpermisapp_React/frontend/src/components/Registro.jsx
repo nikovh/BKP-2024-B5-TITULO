@@ -5,6 +5,7 @@ import { auth, firestore } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import '../styles/Registro.css'
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 function Registro() {
     const [rut, setRut] = useState("");
@@ -14,7 +15,6 @@ function Registro() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [patenteProfesional, setPatenteProfesional] = useState("");
-    // const [rol, setRol] = useState("usuario"); // rol predeterminado
     const [errors, setErrors] = useState('');
     const navigate = useNavigate();
 
@@ -108,7 +108,8 @@ function Registro() {
             console.log("Usuario regisrado en Firestore correctamente");
 
             // Llamada al Backend
-            const response = await fetch("http://localhost:4000/usuarios", {
+            // const response = await fetch("http://localhost:4000/usuarios", {
+                const response = await fetch(`${API_URL}/usuarios`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

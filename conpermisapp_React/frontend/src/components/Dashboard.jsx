@@ -7,6 +7,7 @@ import ExpedienteModal from "./ExpedienteModal";
 import Card from "./Card"
 import '../styles/Dashboard.css'
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 function Dashboard() {
     const [user] = useAuthState(auth);
@@ -23,7 +24,7 @@ function Dashboard() {
                 const email = user.email;
     
                 // Solicitud para obtener el usuario
-                const userResponse = await fetch(`http://localhost:4000/usuarios?email=${email}`);
+                const userResponse = await fetch(`${API_URL}/usuarios?email=${email}`);
                 if (!userResponse.ok) throw new Error("No se encontró el usuario en la base de datos.");
                 const userData = await userResponse.json();
                 console.log(userData)
@@ -31,7 +32,7 @@ function Dashboard() {
                 setNombreUsuario(userData.nombres); // Actualizar el nombre del usuario
     
                 // Solicitud para obtener los expedientes
-                const expedientesResponse = await fetch(`http://localhost:4000/expedientes?usuario_email=${email}`);
+                const expedientesResponse = await fetch(`${API_URL}/expedientes?usuario_email=${email}`);
                 if (!expedientesResponse.ok) throw new Error("Error al cargar expedientes.");
                 const expedientesData = await expedientesResponse.json();
     
@@ -58,7 +59,7 @@ function Dashboard() {
 
         try {
             //verificar si el propietario existe
-            const propietarioExiste = await fetch(`http://localhost:4000/propietarios/${propietario.rut}`)
+            const propietarioExiste = await fetch(`${API_URL}/propietarios/${propietario.rut}`)
                 .then((res) => {
                     if (!res.ok) {
                         throw new Error("Error al verificar el propietario");
@@ -72,7 +73,7 @@ function Dashboard() {
 
             // crear al propietario si no existe
             if (!propietarioExiste) {
-                const crearPropietarioResp = await fetch(`http://localhost:4000/propietarios`, {
+                const crearPropietarioResp = await fetch(`${API_URL}/propietarios`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -92,7 +93,7 @@ function Dashboard() {
             }
 
             // crear expediente
-            const resp = await fetch("http://localhost:4000/expedientes", {
+            const resp = await fetch(`${API_URL}/expedientes`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -109,7 +110,7 @@ function Dashboard() {
                 }),
             });
             if (resp.ok) {
-                const newExpedientes = await fetch(`http://localhost:4000/expedientes?usuario_email=${user.email}`)
+                const newExpedientes = await fetch(`${API_URL}/expedientes?usuario_email=${user.email}`)
                     .then((res) => res.json());
                 setExpedientes(newExpedientes);
             } else {
@@ -146,7 +147,7 @@ function Dashboard() {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:4000/expedientes/${id}`, {
+            const response = await fetch(`${API_URL}/expedientes/${id}`, {
                 method: "DELETE",
             });
 
