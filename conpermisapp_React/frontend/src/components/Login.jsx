@@ -7,6 +7,10 @@ import '../styles/Login.css';
 
 // const db = getFirestore();
 
+function validateEmail(email) {
+    return /\S+@\S+\.\S+/.test(email);
+}
+
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,7 +23,6 @@ function Login() {
 
         if (!validateEmail(email)) {
             setError("El correo electrónico no es válido.");
-            setLoading(false);
             return;
         }
 
