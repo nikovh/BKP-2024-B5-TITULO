@@ -28,6 +28,7 @@ const usuariosRoutes      = require('./routes/usuarios');
 const propietariosRoutes  = require('./routes/propietarios');
 const propiedadesRoutes   = require('./routes/propiedades')
 
+const testRoutes          = require("./routes/test");
 
 // // Usa las rutas en el servidor
 // app.use('/expedientes', expedienteRoutes);
@@ -42,6 +43,8 @@ app.use('/api/formularios', formularioRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/propietarios', propietariosRoutes);
 app.use('/api/propiedades', propiedadesRoutes)
+
+app.use("/api", testRoutes);
 
 
 
@@ -87,4 +90,7 @@ app.get('/', (req, res) => {
 
 // Puerto dinámico para Render
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
+app.listen(PORT, async () => {
+  await connectDB();
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+});

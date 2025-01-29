@@ -25,7 +25,7 @@
 
 // module.exports = { getConnection, sql };
 
-
+ 
 // version PostgreSQL
 const { Sequelize } = require('sequelize');
 
