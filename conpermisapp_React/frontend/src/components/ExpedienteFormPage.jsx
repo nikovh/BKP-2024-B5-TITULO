@@ -21,7 +21,14 @@ function ExpedienteFormPage() {
     const [subtipoNombre, setSubtipoNombre] = useState("");
 
 
-    const [propietario, setPropietario] = useState(null);
+    const [propietario, setPropietario] = useState({
+        rut: "",
+        nombres: "",
+        apellidos: "",
+        email: "",
+        telefono: "",
+    });
+
     const [propietariosList, setPropietariosList] = useState([]);
     const [propietarioSeleccionado, setPropietarioSeleccionado] = useState("");
     const [esNuevoPropietario, setEsNuevoPropietario] = useState(false);
@@ -42,7 +49,7 @@ function ExpedienteFormPage() {
 
     // validacion descripcion
     const validarDescripcion = (desc) => {
-        return desc.trim().length > 0 ? "" : "La descripción es necesaria, no olvides completar este campo.";
+        return desc?.trim().length > 0 ? "" : "La descripción es necesaria, no olvides completar este campo.";
     };
 
     // Cargar tipo y subtipo desde el backend
@@ -60,6 +67,10 @@ function ExpedienteFormPage() {
                     fetch(`${API_URL}/propietarios`),
                 ]);
 
+                if (!tiposRes.ok || !subtiposRes.ok || !propietariosRes.ok) {
+                    throw new Error("Error en la carga de datos iniciales");
+                }
+
                 const tipos = await tiposRes.json();
                 const subtipos = await subtiposRes.json();
                 const propietarios = await propietariosRes.json();
@@ -69,11 +80,14 @@ function ExpedienteFormPage() {
                     propietarios = [propietarios];
                 }
 
-                const tipoEncontrado = tipos.find((t) => String(t.id) === tipoParam);
-                const subtipoEncontrado = subtipos.find((st) => String(st.id) === subtipoParam);
+                // const tipoEncontrado = tipos.find((t) => String(t.id) === tipoParam);
+                // const subtipoEncontrado = subtipos.find((st) => String(st.id) === subtipoParam);
 
-                setTipoNombre(tipoEncontrado?.nombre || "Desconocido");
-                setSubtipoNombre(subtipoEncontrado?.nombre || "Desconocido");
+                // setTipoNombre(tipoEncontrado?.nombre || "Desconocido");
+                // setSubtipoNombre(subtipoEncontrado?.nombre || "Desconocido");
+                // setPropietariosList(propietarios);
+                setTipoNombre(tipos.find((t) => String(t.id) === tipoParam)?.nombre || "Desconocido");
+                setSubtipoNombre(subtipos.find((st) => String(st.id) === subtipoParam)?.nombre || "Desconocido");
                 setPropietariosList(propietarios);
             } catch (err) {
                 console.error("Error al cargar datos iniciales:", err);
@@ -118,10 +132,14 @@ function ExpedienteFormPage() {
             usuario_email: auth.currentUser?.email,
         });
 
+        // const nuevosErrores = {};
+        // if (!descripcion.trim()) nuevosErrores.descripcion = "La descripción es obligatoria.";
+        // if (!propietario) nuevosErrores.propietario = "Debes seleccionar un propietario.";
+        // if (!propiedad.rol_sii.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
         const nuevosErrores = {};
         if (!descripcion.trim()) nuevosErrores.descripcion = "La descripción es obligatoria.";
-        if (!propietario) nuevosErrores.propietario = "Debes seleccionar un propietario.";
-        if (!propiedad.rol_sii.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
+        if (!propietario || !propietario.rut) nuevosErrores.propietario = "Debes seleccionar un propietario.";
+        if (!propiedad || !propiedad.rol_sii?.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
 
         if (Object.keys(nuevosErrores).length > 0) {
             setErrores(nuevosErrores);

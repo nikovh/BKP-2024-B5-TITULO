@@ -415,7 +415,7 @@ router.get("/:id/detalle", async (req, res) => {
                 p.apellidos AS propietario_apellidos,
                 p.email AS propietario_email,
                 p.telefono AS propietario_telefono,
-                pr.rol_sii AS propiedad_rol_sii,
+                pr.rol_sii AS propiedad_rolsii,
                 pr.direccion AS propiedad_direccion,
                 pr.numero AS propiedad_numero,
                 pr.comuna AS propiedad_comuna,
