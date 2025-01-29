@@ -13,8 +13,13 @@ const firebaseAuth  = require('./middlewares/firebaseAuth');
 const app = express();
 
 // Middlewares globales
-app.use(cors());
-app.use(express.json());
+app.use(cors());  //habilita CORS
+// app.use(cors({
+//   origin: "https://conpermisapp-frontend.onrender.com", // Permitir solo este dominio
+//   methods: "GET,POST,PUT,DELETE",
+//   allowedHeaders: "Content-Type,Authorization"
+// }));
+app.use(express.json()); //Recibe JSON
 
 // Rutas
 const expedienteRoutes    = require('./routes/expedientes');
@@ -24,13 +29,20 @@ const propietariosRoutes  = require('./routes/propietarios');
 const propiedadesRoutes   = require('./routes/propiedades')
 
 
-// Usa las rutas en el servidor
-app.use('/expedientes', expedienteRoutes);
-app.use('/formularios', formularioRoutes);
-app.use('/usuarios', usuariosRoutes);
-app.use('/propietarios', propietariosRoutes);
-app.use('/propiedades', propiedadesRoutes)
-// app.use('auth', authRoutes)
+// // Usa las rutas en el servidor
+// app.use('/expedientes', expedienteRoutes);
+// app.use('/formularios', formularioRoutes);
+// app.use('/usuarios', usuariosRoutes);
+// app.use('/propietarios', propietariosRoutes);
+// app.use('/propiedades', propiedadesRoutes)
+
+// Usa las rutas REDNER
+app.use('/api/expedientes', expedienteRoutes);
+app.use('/api/formularios', formularioRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/propietarios', propietariosRoutes);
+app.use('/api/propiedades', propiedadesRoutes)
+
 
 
 // // Ruta de prueba LOCAL
