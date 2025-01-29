@@ -64,6 +64,11 @@ function ExpedienteFormPage() {
                 const subtipos = await subtiposRes.json();
                 const propietarios = await propietariosRes.json();
 
+                // Manejo de datos si `propietarios` no es un array
+                if (!Array.isArray(propietarios)) {
+                    propietarios = [propietarios];
+                }
+
                 const tipoEncontrado = tipos.find((t) => String(t.id) === tipoParam);
                 const subtipoEncontrado = subtipos.find((st) => String(st.id) === subtipoParam);
 
@@ -72,6 +77,7 @@ function ExpedienteFormPage() {
                 setPropietariosList(propietarios);
             } catch (err) {
                 console.error("Error al cargar datos iniciales:", err);
+                setPropietariosList([]);
             }
         };
 
@@ -101,7 +107,7 @@ function ExpedienteFormPage() {
             }
         }
     };
-
+    // Envío del formulario
     const handleSubmit = async () => {
         console.log("Datos finales enviados al backend:", {
             descripcion,
@@ -115,7 +121,6 @@ function ExpedienteFormPage() {
         const nuevosErrores = {};
         if (!descripcion.trim()) nuevosErrores.descripcion = "La descripción es obligatoria.";
         if (!propietario) nuevosErrores.propietario = "Debes seleccionar un propietario.";
-        // if (!propiedad) nuevosErrores.propiedad = "Debes seleccionar una propiedad.";
         if (!propiedad.rol_sii.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
 
         if (Object.keys(nuevosErrores).length > 0) {
