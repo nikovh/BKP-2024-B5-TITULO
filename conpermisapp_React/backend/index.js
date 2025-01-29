@@ -63,15 +63,15 @@ pool.connect()
     .then(() => console.log("✅ Base de datos conectada con éxito"))
     .catch(err => console.error("❌ Error conectando a la base de datos", err));
 
-// // Rutas básicas
-// app.get('/', (req, res) => {
-//   res.send('Backend funcionando correctamente 🚀');
-// });
-
-// alt
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+// Rutas básicas
+app.get('/', (req, res) => {
+  res.send('Backend funcionando correctamente 🚀');
 });
+
+// // alt
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+// });
 
 // Puerto dinámico para Render
 const PORT = process.env.PORT || 5000;
