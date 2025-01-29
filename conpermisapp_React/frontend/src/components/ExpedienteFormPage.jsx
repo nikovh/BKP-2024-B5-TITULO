@@ -166,7 +166,13 @@ function ExpedienteFormPage() {
 
             const data = await response.json();
             console.log('Expediente creado:', data);
+
+            if (!data.id) {
+                throw new Error("La respuesta del backend no incluye el ID del expediente.");
+            }
+
             alert('Expediente creado exitosamente.');
+            console.log("Redirigiendo a:", `/detalle/${data.id}`);
             navigate(`/detalle/${data.id}`);
         } catch (error) {
             console.error('Error al enviar datos:', error);

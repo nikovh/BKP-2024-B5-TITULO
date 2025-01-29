@@ -448,26 +448,36 @@ router.get("/:id/detalle", async (req, res) => {
 
 // Crear un nuevo expediente
 router.post("/", async (req, res) => {
-    const { descripcion, tipo, subtipo, propietario_rut, usuario_email } = req.body;
+    const { descripcion, tipo, subtipo, propietario_rut, usuario_email, estado_expediente_id } = req.body;
 
     if (!descripcion || !tipo || !subtipo || !propietario_rut || !usuario_email) {
         return res.status(400).json({ error: "Faltan campos obligatorios." });
     }
 
     try {
-        const expediente = await sequelize.query(
+        const [expediente] = await sequelize.query(
             `
-            INSERT INTO expedientes (descripcion, tipo, subtipo, propietario_rut, usuario_email)
-            VALUES (:descripcion, :tipo, :subtipo, :propietario_rut, :usuario_email)
-            RETURNING id;
-        `,
+            INSERT INTO expedientes (descripcion, tipo, subtipo, propietario_rut, usuario_email, fecha_creacion, estado_expediente_id)
+            VALUES (:descripcion, :tipo, :subtipo, :propietario_rut, :usuario_email, NOW(), :estado_expediente_id)
+            RETURNING *;
+            `,
             {
-                replacements: { descripcion, tipo, subtipo, propietario_rut, usuario_email },
+                replacements: {
+                    descripcion,
+                    tipo,
+                    subtipo,
+                    propietario_rut,
+                    usuario_email,
+                    estado_expediente_id: estado_expediente_id || 1, // Por defecto estado = 1
+                },
                 type: QueryTypes.INSERT,
             }
         );
 
-        res.status(201).json({ id: expediente[0].id, message: "Expediente creado exitosamente" });
+        res.status(201).json({
+            message: "Expediente creado exitosamente",
+            expediente,
+        });
     } catch (err) {
         console.error("Error al crear expediente:", err);
         res.status(500).json({ error: "Error al crear expediente." });

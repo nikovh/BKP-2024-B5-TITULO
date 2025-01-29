@@ -49,6 +49,7 @@ const ExpedienteDetalle = () => {
         };
     
         if (id) fetchDatos();
+        console.log("Cargando expediente con ID:", id);
     }, [id]);
     
 

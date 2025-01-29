@@ -39,7 +39,7 @@ function App() {
           }
         />
         <Route path="/expediente-form" element={<ExpedienteFormPage />} />
-        <Route path="/expedientes" element={<ExpedienteManager />} />
+
         
         {/* rutas con parametros */}
         <Route path="/expedientes/:email" element={<ExpedienteManager />} />
