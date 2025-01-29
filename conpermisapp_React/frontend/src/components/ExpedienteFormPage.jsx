@@ -10,6 +10,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
 
 function ExpedienteFormPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     // estados
     const [descripcion, setDescripcion] = useState("");
@@ -18,7 +19,7 @@ function ExpedienteFormPage() {
     const [subtipo, setSubtipo] = useState("");
     const [tipoNombre, setTipoNombre] = useState("");
     const [subtipoNombre, setSubtipoNombre] = useState("");
-    const [searchParams] = useSearchParams();
+
 
     const [propietario, setPropietario] = useState(null);
     const [propietariosList, setPropietariosList] = useState([]);
@@ -26,15 +27,15 @@ function ExpedienteFormPage() {
     const [esNuevoPropietario, setEsNuevoPropietario] = useState(false);
 
     const [propiedad, setPropiedad] = useState({
-        rolSII: "",
+        rol_sii: "",
         direccion: "",
         numero: 0,
         comuna: "",
         region: "",
-        inscFojas: "",
-        inscNumero: "",
-        inscYear: "",
-        numPisos: "",
+        insc_fojas: "",
+        insc_numero: "",
+        insc_year: "",
+        num_pisos: "",
         m2: "",
         destino: "",
     });
@@ -108,14 +109,14 @@ function ExpedienteFormPage() {
             subtipo,
             propietario,
             propiedad,
-            usuarioEmail: auth.currentUser?.email,
+            usuario_email: auth.currentUser?.email,
         });
 
         const nuevosErrores = {};
         if (!descripcion.trim()) nuevosErrores.descripcion = "La descripción es obligatoria.";
         if (!propietario) nuevosErrores.propietario = "Debes seleccionar un propietario.";
         // if (!propiedad) nuevosErrores.propiedad = "Debes seleccionar una propiedad.";
-        if (!propiedad.rolSII.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
+        if (!propiedad.rol_sii.trim()) nuevosErrores.propiedad = "Debes completar los datos de la propiedad.";
 
         if (Object.keys(nuevosErrores).length > 0) {
             setErrores(nuevosErrores);
@@ -129,7 +130,7 @@ function ExpedienteFormPage() {
                 subtipo,
                 propietario,
                 propiedad, 
-                usuarioEmail: auth.currentUser?.email,
+                usuario_email: auth.currentUser?.email,
             };
 
             const response = await fetch(`${API_URL}/expedientes`, {
@@ -151,7 +152,7 @@ function ExpedienteFormPage() {
     };
 
     const handleCancel = () => navigate("/dashboard");
-
+    
     return (
         <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
             <h2>Crear Expediente: {tipoNombre} - {subtipoNombre}</h2>
