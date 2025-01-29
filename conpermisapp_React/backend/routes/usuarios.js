@@ -141,42 +141,44 @@ module.exports = router;
 
 // postgreSQL
 const express = require("express");
-const { getConnection, sql } = require("../db");
+const { sequelize } = require("../db"); // Conexión a la BD
 const router = express.Router();
 
-// ✅ Obtener usuarios con filtro opcional por RUT o email
+//  Obtener usuarios con filtro opcional por RUT o email
 router.get("/", async (req, res) => {
     const { rut, email } = req.query;
+
     try {
-        const pool = await getConnection();
-        let query = 'SELECT * FROM usuario';
+        let query = "SELECT * FROM usuario";
+        let replacements = {};
 
         if (rut) {
-            query += ' WHERE rut = @rut';
+            query += " WHERE rut = :rut";
+            replacements.rut = rut;
         } else if (email) {
-            query += ' WHERE email = @email';
+            query += " WHERE email = :email";
+            replacements.email = email;
         }
 
-        const request = pool.request();
-        if (rut) request.input('rut', sql.VarChar, rut);
-        if (email) request.input('email', sql.VarChar, email);
+        const users = await sequelize.query(query, {
+            replacements,
+            type: sequelize.QueryTypes.SELECT
+        });
 
-        const result = await request.query(query);
-
-        if (result.recordset.length === 0) {
-            return res.status(404).json({ error: 'Usuario no encontrado.' });
+        if (users.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado." });
         }
 
-        res.status(200).json(result.recordset);
+        res.status(200).json(users);
     } catch (err) {
-        console.error('Error al obtener usuarios:', err);
-        res.status(500).json({ error: 'Error al obtener usuarios.' });
+        console.error("Error al obtener usuarios:", err);
+        res.status(500).json({ error: "Error al obtener usuarios." });
     }
 });
 
 
 
-// ✅ Crear un nuevo usuario
+//  Crear un nuevo usuario
 router.post("/", async (req, res) => {
     const { rut, nombres, apellidos, telefono, email, password, rol, patenteProfesional } = req.body;
 
@@ -185,88 +187,82 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        const pool = await getConnection();
+        // Verificar si el usuario ya existe
+        const usuarioExistente = await sequelize.query(
+            "SELECT * FROM usuario WHERE rut = :rut OR email = :email",
+            {
+                replacements: { rut, email },
+                type: sequelize.QueryTypes.SELECT
+            }
+        );
 
-        // Verificar si ya existe el usuario
-        const usuarioExistente = await pool.request()
-            .input("rut", sql.VarChar, rut)
-            .input("email", sql.VarChar, email)
-            .query("SELECT * FROM usuario WHERE rut = @rut OR email = @email");
-
-        if (usuarioExistente.recordset.length > 0) {
+        if (usuarioExistente.length > 0) {
             return res.status(400).json({ error: "El RUT o correo electrónico ya está registrado." });
         }
 
         // Insertar nuevo usuario
-        await pool.request()
-            .input("rut", sql.VarChar, rut)
-            .input("nombres", sql.VarChar, nombres)
-            .input("apellidos", sql.VarChar, apellidos)
-            .input("telefono", sql.Int, telefono)
-            .input("email", sql.VarChar, email)
-            .input("password", sql.VarChar, password)
-            .input("rol", sql.VarChar, rol || "usuario") // Valor por defecto
-            .input("patenteProfesional", sql.VarChar, patenteProfesional || null)
-            .query(`
-                INSERT INTO usuario (rut, nombres, apellidos, telefono, email, password, rol, patenteProfesional)
-                VALUES (@rut, @nombres, @apellidos, @telefono, @email, @password, @rol, @patenteProfesional)
-            `);
+        await sequelize.query(
+            `INSERT INTO usuario (rut, nombres, apellidos, telefono, email, password, rol, patenteProfesional)
+             VALUES (:rut, :nombres, :apellidos, :telefono, :email, :password, :rol, :patenteProfesional)`,
+            {
+                replacements: {
+                    rut, nombres, apellidos, telefono, email, password,
+                    rol: rol || "usuario", // Valor por defecto
+                    patenteProfesional: patenteProfesional || null
+                }
+            }
+        );
 
-        res.status(201).json({ message: "usuario registrado exitosamente." });
+        res.status(201).json({ message: "Usuario registrado exitosamente." });
     } catch (err) {
-        console.error("❌ Error al registrar el usuario:", err);
+        console.error("Error al registrar el usuario:", err);
         res.status(500).json({ error: "Error al registrar el usuario." });
     }
 });
 
-// ✅ Eliminar usuario por RUT
+// Eliminar usuario por RUT
 router.delete("/:rut", async (req, res) => {
     const { rut } = req.params;
 
     try {
-        const pool = await getConnection();
-        const result = await pool
-            .request()
-            .input("rut", sql.VarChar, rut)
-            .query("DELETE FROM usuario WHERE rut = @rut");
+        const result = await sequelize.query(
+            "DELETE FROM usuario WHERE rut = :rut",
+            { replacements: { rut } }
+        );
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: "usuario no encontrado." });
+        if (result[1] === 0) {
+            return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
-        res.status(200).json({ message: "usuario eliminado exitosamente." });
+        res.status(200).json({ message: "Usuario eliminado exitosamente." });
     } catch (error) {
-        console.error("❌ Error al eliminar usuario:", error);
+        console.error("Error al eliminar usuario:", error);
         res.status(500).json({ message: "Error al eliminar usuario." });
     }
 });
 
-// ✅ Actualizar usuario por RUT
+// Actualizar usuario por RUT
 router.put("/:rut", async (req, res) => {
     const { rut } = req.params;
     const { nombres, apellidos, email, telefono } = req.body;
 
     try {
-        const pool = await getConnection();
-        const result = await pool.request()
-            .input("rut", sql.VarChar, rut)
-            .input("nombres", sql.VarChar, nombres)
-            .input("apellidos", sql.VarChar, apellidos || null)
-            .input("email", sql.VarChar, email)
-            .input("telefono", sql.Int, telefono)
-            .query(`
-                UPDATE usuario
-                SET nombres = @nombres, apellidos = @apellidos, email = @email, telefono = @telefono
-                WHERE rut = @rut
-            `);
+        const result = await sequelize.query(
+            `UPDATE usuario
+             SET nombres = :nombres, apellidos = :apellidos, email = :email, telefono = :telefono
+             WHERE rut = :rut`,
+            {
+                replacements: { rut, nombres, apellidos, email, telefono }
+            }
+        );
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ error: "usuario no encontrado." });
+        if (result[1] === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado." });
         }
 
-        res.json({ message: "usuario actualizado correctamente." });
+        res.json({ message: "Usuario actualizado correctamente." });
     } catch (error) {
-        console.error("❌ Error al actualizar usuario:", error);
+        console.error("Error al actualizar usuario:", error);
         res.status(500).json({ error: "Error al actualizar usuario." });
     }
 });
