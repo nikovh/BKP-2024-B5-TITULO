@@ -180,7 +180,7 @@ router.get("/", async (req, res) => {
 
 //  Crear un nuevo usuario
 router.post("/", async (req, res) => {
-    const { rut, nombres, apellidos, telefono, email, password, rol, patenteProfesional } = req.body;
+    const { rut, nombres, apellidos, telefono, email, password, rol, patente_profesional } = req.body;
 
     if (!rut || !nombres || !email || !password) {
         return res.status(400).json({ error: "Completa los campos obligatorios." });
@@ -202,13 +202,13 @@ router.post("/", async (req, res) => {
 
         // Insertar nuevo usuario
         await sequelize.query(
-            `INSERT INTO usuario (rut, nombres, apellidos, telefono, email, password, rol, patenteProfesional)
-             VALUES (:rut, :nombres, :apellidos, :telefono, :email, :password, :rol, :patenteProfesional)`,
+            `INSERT INTO usuario (rut, nombres, apellidos, telefono, email, password, rol, patente_profesional)
+             VALUES (:rut, :nombres, :apellidos, :telefono, :email, :password, :rol, :patente_profesional)`,
             {
                 replacements: {
                     rut, nombres, apellidos, telefono, email, password,
                     rol: rol || "usuario", // Valor por defecto
-                    patenteProfesional: patenteProfesional || null
+                    patente_profesional: patente_profesional || null
                 }
             }
         );
