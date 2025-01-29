@@ -147,32 +147,34 @@ const router = express.Router();
 // ✅ Obtener usuarios con filtro opcional por RUT o email
 router.get("/", async (req, res) => {
     const { rut, email } = req.query;
-
     try {
         const pool = await getConnection();
-        let query = "SELECT * FROM usuario";
-        const request = pool.request();
+        let query = 'SELECT * FROM usuario';
 
         if (rut) {
-            query += " WHERE rut = @rut";
-            request.input("rut", sql.VarChar, rut);
+            query += ' WHERE rut = @rut';
         } else if (email) {
-            query += " WHERE email = @email";
-            request.input("email", sql.VarChar, email);
+            query += ' WHERE email = @email';
         }
+
+        const request = pool.request();
+        if (rut) request.input('rut', sql.VarChar, rut);
+        if (email) request.input('email', sql.VarChar, email);
 
         const result = await request.query(query);
 
         if (result.recordset.length === 0) {
-            return res.status(404).json({ error: "usuario no encontrado." });
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
         }
 
         res.status(200).json(result.recordset);
     } catch (err) {
-        console.error("❌ Error al obtener usuarios:", err);
-        res.status(500).json({ error: "Error al obtener usuarios." });
+        console.error('Error al obtener usuarios:', err);
+        res.status(500).json({ error: 'Error al obtener usuarios.' });
     }
 });
+
+
 
 // ✅ Crear un nuevo usuario
 router.post("/", async (req, res) => {
