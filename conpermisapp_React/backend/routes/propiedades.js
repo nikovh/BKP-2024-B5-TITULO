@@ -137,6 +137,10 @@
 
 // module.exports = router;
 
+
+
+
+/*
 const express = require('express');
 const { getConnection, sql } = require('../db');
 const router = express.Router();
@@ -327,5 +331,116 @@ router.put('/:expedienteId', async (req, res) => {
     }
 });
 
+
+module.exports = router;
+*/
+
+
+// corregido para PostgreSQL
+const express = require("express");
+const { sequelize } = require("../db"); // Conexión a PostgreSQL
+const router = express.Router();
+
+// Obtener propiedades con filtro opcional por rolSII o expedienteId
+router.get("/", async (req, res) => {
+    const { rolSII, expedienteId } = req.query;
+
+    try {
+        let query = "SELECT * FROM propiedad";
+        let replacements = {};
+
+        if (rolSII) {
+            query += " WHERE rolSII = :rolSII";
+            replacements.rolSII = rolSII;
+        } else if (expedienteId) {
+            query += " WHERE expediente_id = :expedienteId";
+            replacements.expedienteId = expedienteId;
+        }
+
+        const [propiedades] = await sequelize.query(query, { replacements, type: sequelize.QueryTypes.SELECT });
+
+        if (propiedades.length === 0) {
+            return res.status(404).json({ error: "No se encontraron propiedades." });
+        }
+
+        res.status(200).json(propiedades);
+    } catch (error) {
+        console.error("Error al obtener propiedades:", error);
+        res.status(500).json({ error: "Error al obtener propiedades." });
+    }
+});
+
+// Crear una nueva propiedad
+router.post("/", async (req, res) => {
+    const {
+        rolSII,
+        direccion,
+        numero,
+        comuna,
+        region,
+        inscFojas,
+        inscNumero,
+        inscYear,
+        numPisos,
+        m2,
+        destino,
+        expedienteId,
+    } = req.body;
+
+    if (!rolSII || !direccion || !numero || !comuna || !region) {
+        return res.status(400).json({ error: "Campos obligatorios faltantes." });
+    }
+
+    try {
+        const [nuevaPropiedad] = await sequelize.query(
+            `INSERT INTO propiedad (
+                rolSII, direccion, numero, comuna, region,
+                inscFojas, inscNumero, inscYear, numPisos, m2, destino, expediente_id
+            ) VALUES (
+                :rolSII, :direccion, :numero, :comuna, :region,
+                :inscFojas, :inscNumero, :inscYear, :numPisos, :m2, :destino, :expedienteId
+            ) RETURNING *`,
+            {
+                replacements: { rolSII, direccion, numero, comuna, region, inscFojas, inscNumero, inscYear, numPisos, m2, destino, expedienteId },
+                type: sequelize.QueryTypes.INSERT,
+            }
+        );
+
+        res.status(201).json({
+            message: "Propiedad creada exitosamente.",
+            propiedad: nuevaPropiedad,
+        });
+    } catch (error) {
+        console.error("Error al crear la propiedad:", error);
+        res.status(500).json({ error: "Error al crear la propiedad." });
+    }
+});
+
+// Actualizar propiedad por Expediente_id
+router.put("/:expedienteId", async (req, res) => {
+    const { expedienteId } = req.params;
+    const { direccion, numero, region } = req.body;
+
+    try {
+        const [result] = await sequelize.query(
+            `UPDATE propiedad
+             SET direccion = :direccion, numero = :numero, region = :region
+             WHERE expediente_id = :expedienteId RETURNING *`,
+            {
+                replacements: { expedienteId, direccion, numero, region },
+                type: sequelize.QueryTypes.UPDATE,
+            }
+        );
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: "Propiedad no encontrada." });
+        }
+
+        res.json({ message: "Propiedad actualizada correctamente." });
+    } catch (error) {
+        console.error("Error al actualizar propiedad:", error);
+        res.status(500).json({ error: "Error al actualizar propiedad." });
+    }
+});
 
 module.exports = router;

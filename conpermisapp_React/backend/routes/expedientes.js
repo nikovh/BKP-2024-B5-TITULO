@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const router = express.Router();
 const { getConnection, sql } = require("../db");
@@ -319,6 +320,211 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error al eliminar el expediente:', error);
         res.status(500).json({ error: 'Error al eliminar el expediente' });
+    }
+});
+
+module.exports = router;
+*/
+
+
+// version PostgreSQL
+const express = require("express");
+const { sequelize } = require("../db"); // Conexión a PostgreSQL
+const router = express.Router();
+const { QueryTypes } = require("sequelize");
+
+// Obtener expedientes con filtro opcional por usuario_email o usuario_rut
+router.get("/", async (req, res) => {
+    const { usuario_email, usuario_rut } = req.query;
+
+    try {
+        let query = `
+            SELECT
+                e.*,
+                p.rut AS propietario_rut,
+                p.nombres AS propietario_nombres
+            FROM expedientes e
+            LEFT JOIN propietario p ON e.propietario_rut = p.rut
+        `;
+
+        let replacements = {};
+        if (usuario_email) {
+            query += " WHERE e.usuario_email = :usuario_email";
+            replacements.usuario_email = usuario_email;
+        } else if (usuario_rut) {
+            query += " WHERE e.usuario_rut = :usuario_rut";
+            replacements.usuario_rut = usuario_rut;
+        }
+
+        const expedientes = await sequelize.query(query, {
+            replacements,
+            type: QueryTypes.SELECT,
+        });
+
+        res.status(200).json(expedientes);
+    } catch (error) {
+        console.error("Error al obtener expedientes:", error);
+        res.status(500).json({ error: "Error al obtener expedientes." });
+    }
+});
+
+// Obtener tipos de expedientes
+router.get("/tipo-expediente", async (req, res) => {
+    try {
+        const tipos = await sequelize.query("SELECT id, nombre FROM tipo_expediente", {
+            type: QueryTypes.SELECT,
+        });
+        res.json(tipos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al obtener tipos de expediente" });
+    }
+});
+
+// Obtener subtipos de expedientes
+router.get("/subtipo-expediente", async (req, res) => {
+    try {
+        const subtipos = await sequelize.query("SELECT id, nombre FROM sub_tipo_expediente", {
+            type: QueryTypes.SELECT,
+        });
+        res.json(subtipos);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error al obtener los subtipos de expedientes" });
+    }
+});
+
+// Obtener detalle de un expediente por ID
+router.get("/:id/detalle", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const expediente = await sequelize.query(
+            `
+            SELECT 
+                e.id AS expediente_id,
+                e.descripcion,
+                e.tipo,
+                e.subtipo,
+                e.estado_expediente_id,
+                ee.tipo_estado AS estado_nombre, 
+                e.fecha_creacion,
+                e.usuario_email,
+                p.rut AS propietario_rut,
+                p.nombres AS propietario_nombres,
+                p.apellidos AS propietario_apellidos,
+                p.email AS propietario_email,
+                p.telefono AS propietario_telefono,
+                pr.rol_sii AS propiedad_rol_sii,
+                pr.direccion AS propiedad_direccion,
+                pr.numero AS propiedad_numero,
+                pr.comuna AS propiedad_comuna,
+                pr.region AS propiedad_region,
+                pr.insc_fojas AS propiedad_insc_fojas,
+                pr.insc_numero AS propiedad_insc_numero,
+                pr.insc_year AS propiedad_insc_year,
+                pr.num_pisos AS propiedad_num_pisos,
+                pr.m2 AS propiedad_m2,
+                pr.destino AS propiedad_destino
+            FROM expedientes e
+            LEFT JOIN propietario p ON e.propietario_rut = p.rut
+            LEFT JOIN estado_expediente ee ON e.estado_expediente_id = ee.id
+            LEFT JOIN propiedad pr ON e.id = pr.expediente_id
+            WHERE e.id = :id
+        `,
+            { replacements: { id }, type: QueryTypes.SELECT }
+        );
+
+        if (expediente.length === 0) {
+            return res.status(404).json({ error: "Expediente no encontrado" });
+        }
+
+        res.status(200).json(expediente[0]);
+    } catch (error) {
+        console.error("Error al obtener el detalle del expediente:", error);
+        res.status(500).json({ error: "Error al obtener el detalle del expediente." });
+    }
+});
+
+// Crear un nuevo expediente
+router.post("/", async (req, res) => {
+    const { descripcion, tipo, subtipo, propietario_rut, usuario_email } = req.body;
+
+    if (!descripcion || !tipo || !subtipo || !propietario_rut || !usuario_email) {
+        return res.status(400).json({ error: "Faltan campos obligatorios." });
+    }
+
+    try {
+        const expediente = await sequelize.query(
+            `
+            INSERT INTO expedientes (descripcion, tipo, subtipo, propietario_rut, usuario_email)
+            VALUES (:descripcion, :tipo, :subtipo, :propietario_rut, :usuario_email)
+            RETURNING id;
+        `,
+            {
+                replacements: { descripcion, tipo, subtipo, propietario_rut, usuario_email },
+                type: QueryTypes.INSERT,
+            }
+        );
+
+        res.status(201).json({ id: expediente[0].id, message: "Expediente creado exitosamente" });
+    } catch (err) {
+        console.error("Error al crear expediente:", err);
+        res.status(500).json({ error: "Error al crear expediente." });
+    }
+});
+
+// Actualizar un expediente por ID
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { descripcion, tipo, subtipo, estado_expediente_id } = req.body;
+
+    try {
+        const result = await sequelize.query(
+            `
+            UPDATE expedientes
+            SET
+                descripcion = :descripcion,
+                tipo = :tipo,
+                subtipo = :subtipo,
+                estado_expediente_id = :estado_expediente_id
+            WHERE id = :id
+        `,
+            {
+                replacements: { id, descripcion, tipo, subtipo, estado_expediente_id },
+                type: QueryTypes.UPDATE,
+            }
+        );
+
+        if (result[1] === 0) {
+            return res.status(404).json({ error: "Expediente no encontrado" });
+        }
+
+        res.status(200).json({ message: "Expediente actualizado exitosamente" });
+    } catch (error) {
+        console.error("Error al actualizar el expediente:", error);
+        res.status(500).json({ error: "Error al actualizar el expediente" });
+    }
+});
+
+// Eliminar un expediente por ID
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await sequelize.query(
+            `DELETE FROM expedientes WHERE id = :id`,
+            { replacements: { id }, type: QueryTypes.DELETE }
+        );
+
+        if (result[1] === 0) {
+            return res.status(404).json({ error: "Expediente no encontrado" });
+        }
+
+        res.status(200).json({ message: "Expediente eliminado exitosamente" });
+    } catch (error) {
+        console.error("Error al eliminar el expediente:", error);
+        res.status(500).json({ error: "Error al eliminar el expediente" });
     }
 });
 
