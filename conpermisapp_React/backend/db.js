@@ -31,13 +31,13 @@ const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  dialect: 'postgres', 
-  logging: false, // Desactiva logs en producción
+  port: process.env.DB_PORT || 5432,
+  dialect: 'postgres',
+  logging: false,
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: false, // 🔹 Necesario en Render para evitar errores SSL
+      rejectUnauthorized: false, // 🔹 Importante para Render
     },
   },
 });
@@ -48,7 +48,6 @@ const connectDB = async () => {
     console.log('🟢 Conexión exitosa a PostgreSQL');
   } catch (error) {
     console.error('🔴 Error al conectar a PostgreSQL:', error);
-    process.exit(1);
   }
 };
 
