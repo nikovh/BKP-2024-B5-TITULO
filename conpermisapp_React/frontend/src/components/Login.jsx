@@ -82,7 +82,7 @@ function Login() {
                     {error && <p className="error">{error}</p>}
                     <button type="submit" className="login-button"> Iniciar sesión</button>
                 </form>
-                <p>¿No tienes cuenta? No hay problema, <Link to="/registro">Regístrate aquí</a>.</p>
+                <p>¿No tienes cuenta? No hay problema, <Link to="/registro">Regístrate aquí</Link>.</p>
             </div>
         </div>
     );
