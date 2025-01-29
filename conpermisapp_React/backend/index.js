@@ -1,7 +1,10 @@
 require('dotenv').config();
 const express       = require('express');
 const cors          = require('cors');
+
+
 const { Pool }      = require('pg');
+const path          = require('path');
 
 // importa la instancia de Firebase Admin y el middleware
 const admin         = require('./firebaseAdmin');
