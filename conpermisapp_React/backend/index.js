@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express       = require('express');
 const cors          = require('cors');
-const { getConnection } = require("./db")
+const { getConnection, connectDB } = require("./db")
 
 const { Pool }      = require('pg');
 const path          = require('path');
@@ -14,11 +14,6 @@ const app = express();
 
 // Middlewares globales
 app.use(cors());  //habilita CORS
-// app.use(cors({
-//   origin: "https://conpermisapp-frontend.onrender.com", // Permitir solo este dominio
-//   methods: "GET,POST,PUT,DELETE",
-//   allowedHeaders: "Content-Type,Authorization"
-// }));
 app.use(express.json()); //Recibe JSON
 
 // Rutas
@@ -37,7 +32,7 @@ const testRoutes          = require("./routes/test");
 // app.use('/propietarios', propietariosRoutes);
 // app.use('/propiedades', propiedadesRoutes)
 
-// Usa las rutas REDNER
+// Usa las rutas RENDER
 app.use('/api/expedientes', expedienteRoutes);
 app.use('/api/formularios', formularioRoutes);
 app.use('/api/usuarios', usuariosRoutes);
@@ -88,9 +83,16 @@ app.get('/', (req, res) => {
 //   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 // });
 
-// Puerto dinámico para Render
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
-  await connectDB();
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-});
+// // Puerto dinámico para Render
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, async () => {
+//   await connectDB();
+//   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+// });
+
+(async () => {
+  await connectDB(); // 🔹 Conectar a la base de datos antes de iniciar el servidor
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  });
+})();

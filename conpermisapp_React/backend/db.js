@@ -48,6 +48,7 @@ const connectDB = async () => {
     console.log('🟢 Conexión exitosa a PostgreSQL');
   } catch (error) {
     console.error('🔴 Error al conectar a PostgreSQL:', error);
+    process.exit(1);
   }
 };
 
